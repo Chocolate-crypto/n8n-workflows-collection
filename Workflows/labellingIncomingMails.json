@@ -1,0 +1,307 @@
+{
+  "name": "Inbox",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        48
+      ],
+      "id": "8b26841e-559e-4699-858f-a9110c13c3c7",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "rOz4O0NrfOFs1vLL",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputText": "={{ $json.text }}",
+        "categories": {
+          "categories": [
+            {
+              "category": "High Priority",
+              "description": "\"Classify this email as High Priority if it contains urgent, time-sensitive, or critical information that requires immediate attention, such as escalations, deadlines, emergencies, or executive-level requests.\""
+            },
+            {
+              "category": "Feedback",
+              "description": "\"Classify this email as Feedback if it includes reviews, suggestions, comments, evaluations, survey responses, user experience inputs, or performance-related messages from clients, colleagues, or managers.\""
+            },
+            {
+              "category": "Other",
+              "description": "\"Classify this email as Other if it does not clearly fit into the High Priority, Promotion, Finance, or Feedback categories. Use this for general, miscellaneous, or non-categorized communication.\""
+            },
+            {
+              "category": "Finance",
+              "description": "\"Classify this email as Finance if it includes financial information, invoices, billing, payment confirmations, salary, budget reports, account summaries, tax documents, or anything related to monetary transactions.\""
+            },
+            {
+              "category": "Promotion",
+              "description": "\"Classify this email as Promotion if it contains marketing materials, product advertisements, special offers, event invites, discounts, newsletters, or any content that promotes products or services.\""
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textClassifier",
+      "typeVersion": 1.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "4b2c9fe5-6af8-46d6-8197-b276f564d21b",
+      "name": "Text Classifier"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "openai/gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "openai/gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        208,
+        288
+      ],
+      "id": "20b9388e-f406-49a7-9d05-9c4b56020cb4",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "xkuvANZj3OjbWw14",
+          "name": "OpenAi account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $json.id }}",
+        "labelIds": [
+          "Label_9016388569234817898"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        672,
+        -224
+      ],
+      "id": "2feccd58-1121-4815-82c0-c2fb2997221f",
+      "name": "Add label to message",
+      "webhookId": "003b7754-beff-4655-ad37-cd1f2744490f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "rOz4O0NrfOFs1vLL",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $json.id }}",
+        "labelIds": [
+          "Label_3124975033544589050"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        672,
+        -96
+      ],
+      "id": "d0375af7-a9a8-4698-a387-113a3491cd2d",
+      "name": "Add label to message2",
+      "webhookId": "003b7754-beff-4655-ad37-cd1f2744490f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "rOz4O0NrfOFs1vLL",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $json.id }}",
+        "labelIds": [
+          "Label_3895638644502644198"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        672,
+        32
+      ],
+      "id": "b46cf0b3-de08-47f5-ab4f-530bf114d37b",
+      "name": "Add label to message1",
+      "webhookId": "003b7754-beff-4655-ad37-cd1f2744490f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "rOz4O0NrfOFs1vLL",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $json.id }}",
+        "labelIds": [
+          "Label_576391732440534518"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        672,
+        160
+      ],
+      "id": "6aae6aa9-a5eb-44d1-86a2-95320491a832",
+      "name": "Add label to message3",
+      "webhookId": "003b7754-beff-4655-ad37-cd1f2744490f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "rOz4O0NrfOFs1vLL",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $json.id }}",
+        "labelIds": [
+          "Label_7317894286950824209"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        672,
+        288
+      ],
+      "id": "6205b44a-a4f6-4731-8ad8-509f2abc9d73",
+      "name": "Add label to message4",
+      "webhookId": "003b7754-beff-4655-ad37-cd1f2744490f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "rOz4O0NrfOFs1vLL",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "\n\n\n## Managing Inbox \nCategorise the incoming mails by adding labels ",
+        "height": 672,
+        "width": 928,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -64,
+        -240
+      ],
+      "typeVersion": 1,
+      "id": "ab292748-986d-4832-84af-aa06cfc47a0a",
+      "name": "Sticky Note"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Text Classifier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Text Classifier",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text Classifier": {
+      "main": [
+        [
+          {
+            "node": "Add label to message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Add label to message2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Add label to message1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Add label to message3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Add label to message4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "0250bb1f-8892-4e39-889a-669150a5c94f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "34f72aadfdcd810791c973b26db36db117ecc3894a031baece5929c91fde0ab6"
+  },
+  "id": "UWCjwiNSjZXj3kNX",
+  "tags": []
+}
