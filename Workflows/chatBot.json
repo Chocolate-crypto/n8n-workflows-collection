@@ -60,47 +60,6 @@
       "name": "Respond to Webhook"
     },
     {
-      "parameters": {
-        "operation": "download",
-        "fileId": {
-          "__rl": true,
-          "value": "1QoxoeLXLJ0d7urvElbFVbzeyZj0kW3xc",
-          "mode": "list",
-          "cachedResultName": "sunrise-healthcare-knowledgebase-v1.txt",
-          "cachedResultUrl": "https://drive.google.com/file/d/1QoxoeLXLJ0d7urvElbFVbzeyZj0kW3xc/view?usp=drivesdk"
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.googleDrive",
-      "typeVersion": 3,
-      "position": [
-        960,
-        128
-      ],
-      "id": "4f441991-467a-468c-a1c8-51ef7fc26899",
-      "name": "Download file",
-      "credentials": {
-        "googleDriveOAuth2Api": {
-          "id": "gTlmQRt7z3ZJR5RL",
-          "name": "Google Drive account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "operation": "text",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.extractFromFile",
-      "typeVersion": 1,
-      "position": [
-        1216,
-        128
-      ],
-      "id": "b04c06ad-1740-4546-b883-c22d0d0105aa",
-      "name": "Extract from File"
-    },
-    {
       "parameters": {},
       "type": "@n8n/n8n-nodes-langchain.embeddingsCohere",
       "typeVersion": 1,
@@ -215,6 +174,47 @@
       ],
       "id": "c8aef1eb-006c-4156-b27e-771ee153db22",
       "name": "Query Vector Tool"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "1QoxoeLXLJ0d7urvElbFVbzeyZj0kW3xc",
+          "mode": "list",
+          "cachedResultName": "sunrise-healthcare-knowledgebase-v1.txt",
+          "cachedResultUrl": "https://drive.google.com/file/d/1QoxoeLXLJ0d7urvElbFVbzeyZj0kW3xc/view?usp=drivesdk"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        960,
+        128
+      ],
+      "id": "4f441991-467a-468c-a1c8-51ef7fc26899",
+      "name": "Download Knowledge Base Text File",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "gTlmQRt7z3ZJR5RL",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        1216,
+        128
+      ],
+      "id": "b04c06ad-1740-4546-b883-c22d0d0105aa",
+      "name": "Extract Text from Knowledge Base File"
     }
   ],
   "pinData": {},
@@ -236,28 +236,6 @@
           {
             "node": "AI Query Agent",
             "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Download file": {
-      "main": [
-        [
-          {
-            "node": "Extract from File",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Extract from File": {
-      "main": [
-        [
-          {
-            "node": "Knowledge Base Vector Store",
-            "type": "main",
             "index": 0
           }
         ]
@@ -311,13 +289,35 @@
           }
         ]
       ]
+    },
+    "Download Knowledge Base Text File": {
+      "main": [
+        [
+          {
+            "node": "Extract Text from Knowledge Base File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Text from Knowledge Base File": {
+      "main": [
+        [
+          {
+            "node": "Knowledge Base Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "3f3d2278-a187-4580-9e4e-cf970545bfbf",
+  "versionId": "b3af3979-0c36-47fc-a538-64cd1b0d1c7d",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "1e2bb8aa82f0be636e997b5e804bc20eb985dca9a039ca316d301d1dd94ae864"
