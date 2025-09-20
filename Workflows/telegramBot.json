@@ -1,0 +1,144 @@
+{
+  "name": "Telegrambot",
+  "nodes": [
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "openai/gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "openai/gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        208,
+        160
+      ],
+      "id": "c70deb23-ddf1-495a-abfc-da3982a4e27d",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "KKIQUuyMr0SpwJAR",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "54f5de9e-cb0d-44e2-a19d-5bf7de2438a8",
+      "name": "Telegram triggers on a new message",
+      "webhookId": "c1d0fda0-af9c-465b-be5e-e2b868b5e708",
+      "credentials": {
+        "telegramApi": {
+          "id": "ZuxvuWBPZs5SQr5j",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram triggers on a new message').item.json.message.chat.id }}",
+        "text": "={{ $json.text }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        592,
+        0
+      ],
+      "id": "cc093892-9a45-4db1-a9e4-7a0c783efb37",
+      "name": "Send response back to telegram",
+      "webhookId": "bb4285de-e282-4e92-a5c2-f5063bc40083",
+      "credentials": {
+        "telegramApi": {
+          "id": "ZuxvuWBPZs5SQr5j",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "You are a helpful assistant. You are a concise Telegram chatbot. Respond to user queries with brief, helpful messages. Keep your replies under two sentences. Always prioritize brevity."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        208,
+        0
+      ],
+      "id": "f5afa179-f08c-4a7d-b25f-d65e48acc311",
+      "name": "AI assistant"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI assistant",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram triggers on a new message": {
+      "main": [
+        [
+          {
+            "node": "AI assistant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI assistant": {
+      "main": [
+        [
+          {
+            "node": "Send response back to telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "a1183fb4-0d6f-4277-af89-b4ce2af36ce8",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1e2bb8aa82f0be636e997b5e804bc20eb985dca9a039ca316d301d1dd94ae864"
+  },
+  "id": "WUcMh1LgD4trmRIU",
+  "tags": []
+}
