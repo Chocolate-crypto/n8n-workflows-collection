@@ -1,0 +1,820 @@
+{
+  "name": "HTTP GET (NO Auth)",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        32,
+        -144
+      ],
+      "id": "74f4f277-5ca7-4a73-9476-932d683da963",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "url": "https://dummyjson.com/products",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        -144
+      ],
+      "id": "718bae0a-d9e7-497a-b93e-5ea498343b3f",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appt8va8bDz5pZkMh",
+          "mode": "list",
+          "cachedResultName": "Products",
+          "cachedResultUrl": "https://airtable.com/appt8va8bDz5pZkMh"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblhZRR1BeC4DEZZy",
+          "mode": "list",
+          "cachedResultName": "Reviews",
+          "cachedResultUrl": "https://airtable.com/appt8va8bDz5pZkMh/tblhZRR1BeC4DEZZy"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Comment": "={{ $json.reviews.comment }}",
+            "Reviewer Name": "={{ $json.reviews.reviewerName }}",
+            "Reviewer Mail": "={{ $json.reviews.reviewerEmail }}",
+            "Rating": "={{ $json.reviews.rating }}",
+            "Date": "={{ $json.reviews.date.split('T')[0] }}",
+            "Product": "={{ [$json[\"id\"]] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Review ID",
+              "displayName": "Review ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Product",
+              "displayName": "Product",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Comment",
+              "displayName": "Comment",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Reviewer Name",
+              "displayName": "Reviewer Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Reviewer Mail",
+              "displayName": "Reviewer Mail",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Rating",
+              "displayName": "Rating",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "typecast": true
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1168,
+        -176
+      ],
+      "id": "3d3a19f2-8e2a-4835-bcd7-fef28bcd00d1",
+      "name": "Create a 'Review' record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "73pKa56oYODEHkTW",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appt8va8bDz5pZkMh",
+          "mode": "list",
+          "cachedResultName": "Products",
+          "cachedResultUrl": "https://airtable.com/appt8va8bDz5pZkMh"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblORrcciUWs03YqS",
+          "mode": "list",
+          "cachedResultName": "Products",
+          "cachedResultUrl": "https://airtable.com/appt8va8bDz5pZkMh/tblORrcciUWs03YqS"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Price": "={{ $('Split Products into Individual Items').item.json.price }}",
+            "Discount %": "={{ $('Split Products into Individual Items').item.json.discountPercentage /100 }}",
+            "Rating (Avg)": "={{ $('Split Products into Individual Items').item.json.rating }}",
+            "Stock": "={{ $('Split Products into Individual Items').item.json.stock }}",
+            "Weight (g)": "={{ $('Split Products into Individual Items').item.json.weight }}",
+            "Width": "={{ $('Split Products into Individual Items').item.json.dimensions.width }}",
+            "Height": "={{ $('Split Products into Individual Items').item.json.dimensions.height }}",
+            "Depth": "={{ $('Split Products into Individual Items').item.json.dimensions.depth }}",
+            "Min Order Qty": "={{ $('Split Products into Individual Items').item.json.minimumOrderQuantity }}",
+            "Title": "={{ $('Split Products into Individual Items').item.json.title }}",
+            "Description": "={{ $('Split Products into Individual Items').item.json.description }}",
+            "Category": "={{ $('Split Products into Individual Items').item.json.category }}",
+            "Tags": "={{ $('Split Products into Individual Items').item.json.tags }}",
+            "Brand": "={{ $('Split Products into Individual Items').item.json.brand }}",
+            "SKU": "={{ $('Split Products into Individual Items').item.json.sku }}",
+            "Warranty": "={{ $('Split Products into Individual Items').item.json.warrantyInformation }}",
+            "Shipping Info": "={{ $('Split Products into Individual Items').item.json.shippingInformation }}",
+            "Availability": "={{ $('Split Products into Individual Items').item.json.availabilityStatus }}",
+            "Return Policy": "={{ $('Split Products into Individual Items').item.json.returnPolicy }}",
+            "Thumbnail": "={{ $('Split Products into Individual Items').item.json.thumbnail }}",
+            "Barcode": "={{ $('Split Products into Individual Items').item.json.meta.barcode }}",
+            "QR Code": "={{ $('Split Products into Individual Items').item.json.meta.qrCode }}",
+            "ProductID": "={{ $json.id }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "ProductID",
+              "displayName": "ProductID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Description",
+              "displayName": "Description",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Category",
+              "displayName": "Category",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Price",
+              "displayName": "Price",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Discount %",
+              "displayName": "Discount %",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Rating (Avg)",
+              "displayName": "Rating (Avg)",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Stock",
+              "displayName": "Stock",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Tags",
+              "displayName": "Tags",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "options": [
+                {
+                  "name": "beauty",
+                  "value": "beauty"
+                },
+                {
+                  "name": "mascara",
+                  "value": "mascara"
+                },
+                {
+                  "name": "eyeshadow",
+                  "value": "eyeshadow"
+                },
+                {
+                  "name": "face powder",
+                  "value": "face powder"
+                },
+                {
+                  "name": "lipstick",
+                  "value": "lipstick"
+                },
+                {
+                  "name": "fragrances",
+                  "value": "fragrances"
+                },
+                {
+                  "name": "perfumes",
+                  "value": "perfumes"
+                },
+                {
+                  "name": "furniture",
+                  "value": "furniture"
+                },
+                {
+                  "name": "beds",
+                  "value": "beds"
+                },
+                {
+                  "name": "sofas",
+                  "value": "sofas"
+                },
+                {
+                  "name": "bedside tables",
+                  "value": "bedside tables"
+                },
+                {
+                  "name": "office chairs",
+                  "value": "office chairs"
+                },
+                {
+                  "name": "bathroom",
+                  "value": "bathroom"
+                },
+                {
+                  "name": "meat",
+                  "value": "meat"
+                },
+                {
+                  "name": "pet supplies",
+                  "value": "pet supplies"
+                },
+                {
+                  "name": "dog food",
+                  "value": "dog food"
+                },
+                {
+                  "name": "seafood",
+                  "value": "seafood"
+                },
+                {
+                  "name": "nail polish",
+                  "value": "nail polish"
+                },
+                {
+                  "name": "fruits",
+                  "value": "fruits"
+                },
+                {
+                  "name": "cat food",
+                  "value": "cat food"
+                },
+                {
+                  "name": "cooking essentials",
+                  "value": "cooking essentials"
+                },
+                {
+                  "name": "vegetables",
+                  "value": "vegetables"
+                },
+                {
+                  "name": "dairy",
+                  "value": "dairy"
+                },
+                {
+                  "name": "condiments",
+                  "value": "condiments"
+                },
+                {
+                  "name": "desserts",
+                  "value": "desserts"
+                },
+                {
+                  "name": "beverages",
+                  "value": "beverages"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Brand",
+              "displayName": "Brand",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "SKU",
+              "displayName": "SKU",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Weight (g)",
+              "displayName": "Weight (g)",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Width",
+              "displayName": "Width",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Height",
+              "displayName": "Height",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Depth",
+              "displayName": "Depth",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Warranty",
+              "displayName": "Warranty",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Shipping Info",
+              "displayName": "Shipping Info",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Availability",
+              "displayName": "Availability",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "In Stock",
+                  "value": "In Stock"
+                },
+                {
+                  "name": "Out of Stock",
+                  "value": "Out of Stock"
+                },
+                {
+                  "name": "Preorder",
+                  "value": "Preorder"
+                },
+                {
+                  "name": "Low Stock",
+                  "value": "Low Stock"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Return Policy",
+              "displayName": "Return Policy",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Min Order Qty",
+              "displayName": "Min Order Qty",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Created At",
+              "displayName": "Created At",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Updated At",
+              "displayName": "Updated At",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Barcode",
+              "displayName": "Barcode",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "QR Code",
+              "displayName": "QR Code",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Images",
+              "displayName": "Images",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Thumbnail",
+              "displayName": "Thumbnail",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Reviews",
+              "displayName": "Reviews",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Reviews 2",
+              "displayName": "Reviews 2",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "typecast": true
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        720,
+        -272
+      ],
+      "id": "2c20540e-a862-4901-a27f-be25d730a989",
+      "name": "Create a 'Product'record",
+      "notesInFlow": false,
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "73pKa56oYODEHkTW",
+          "name": "Airtable Personal Access Token account"
+        }
+      },
+      "notes": "Create a record in 'Products' table"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "reviews",
+        "include": "allOtherFields",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        720,
+        -32
+      ],
+      "id": "f561da23-220a-473d-93a0-7faceea5d87f",
+      "name": "Split Reviews into Individual Items"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "products",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        448,
+        -144
+      ],
+      "id": "3b2f17e4-118a-4ad8-81ad-6eb940c05ec5",
+      "name": "Split Products into Individual Items"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "advanced": true,
+        "mergeByFields": {
+          "values": [
+            {
+              "field1": "fields.ProductID",
+              "field2": "id"
+            }
+          ]
+        },
+        "joinMode": "enrichInput2",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        992,
+        -176
+      ],
+      "id": "f591e3cc-4482-4e62-ab62-394549962e0b",
+      "name": "Merge Reviews with Airtable Record ID"
+    },
+    {
+      "parameters": {
+        "content": "## Airtable Products & Reviews Workflow\nThis workflow gets product data from DummyJSON, \nsplits it, creates a product record in Airtable, \nand then splits and creates a linked review record\n for each product using the new Airtable record ID\n to ensure data integrity.",
+        "height": 496,
+        "width": 1536
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -32,
+        -368
+      ],
+      "typeVersion": 1,
+      "id": "dc2e8865-c732-495f-a5e6-7b4e05b8c245",
+      "name": "Sticky Note"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Split Products into Individual Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a 'Product'record": {
+      "main": [
+        [
+          {
+            "node": "Merge Reviews with Airtable Record ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a 'Review' record": {
+      "main": [
+        []
+      ]
+    },
+    "Split Reviews into Individual Items": {
+      "main": [
+        [
+          {
+            "node": "Merge Reviews with Airtable Record ID",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Split Products into Individual Items": {
+      "main": [
+        [
+          {
+            "node": "Split Reviews into Individual Items",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Create a 'Product'record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Reviews with Airtable Record ID": {
+      "main": [
+        [
+          {
+            "node": "Create a 'Review' record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "7eca5f35-fc32-4b35-8b3f-6e4fcf4f6131",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1e2bb8aa82f0be636e997b5e804bc20eb985dca9a039ca316d301d1dd94ae864"
+  },
+  "id": "xN09xnht29LGIwue",
+  "tags": []
+}
