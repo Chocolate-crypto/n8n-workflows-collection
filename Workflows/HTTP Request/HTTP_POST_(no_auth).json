@@ -1,0 +1,159 @@
+{
+  "name": "HTTP POST no auth",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -16,
+        -176
+      ],
+      "id": "0c916205-d659-4998-accc-7dc8eb0a91db",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "content": "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n## HTTP POST (no auth)\nAirtable records aggregated → single JSON array\n\nSent via HTTP POST (no auth)\n\nTarget: Webhook endpoint",
+        "height": 352,
+        "width": 864
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -208,
+        -208
+      ],
+      "typeVersion": 1,
+      "id": "63b8380b-4762-4c81-8b89-9a64950c026c",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appt8va8bDz5pZkMh",
+          "mode": "list",
+          "cachedResultName": "Products",
+          "cachedResultUrl": "https://airtable.com/appt8va8bDz5pZkMh"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblhZRR1BeC4DEZZy",
+          "mode": "list",
+          "cachedResultName": "Reviews",
+          "cachedResultUrl": "https://airtable.com/appt8va8bDz5pZkMh/tblhZRR1BeC4DEZZy"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        208,
+        -192
+      ],
+      "id": "516b0474-8323-4286-99ff-5df840597d7c",
+      "name": "Get All Records",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "73pKa56oYODEHkTW",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://apparently-rapid-feline.ngrok-free.app/webhook/87d50f6d-0397-44f6-b883-fb3acc2f1627",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.data }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        208,
+        -32
+      ],
+      "id": "a353aa35-f6ba-4f85-ab53-a25823c1af18",
+      "name": "HTTP POST Request"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        496,
+        -48
+      ],
+      "id": "32065b8f-8f86-4384-9d2b-d2555d2e16f2",
+      "name": "Aggregate into One LIST"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get All Records",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get All Records": {
+      "main": [
+        [
+          {
+            "node": "Aggregate into One LIST",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate into One LIST": {
+      "main": [
+        [
+          {
+            "node": "HTTP POST Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "2d7bb337-ea2d-42d5-baee-dee401607acc",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1e2bb8aa82f0be636e997b5e804bc20eb985dca9a039ca316d301d1dd94ae864"
+  },
+  "id": "s3e9OWk1KpZgq3cV",
+  "tags": []
+}
