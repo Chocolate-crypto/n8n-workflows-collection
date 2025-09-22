@@ -1,0 +1,1611 @@
+{
+  "name": "HTTP GET auth",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        -32
+      ],
+      "id": "0c0f38cf-95e5-4ecb-bce3-007198b79fe7",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "url": "https://api.airtable.com/v0/appt8va8bDz5pZkMh/Products",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        208,
+        -32
+      ],
+      "id": "aedd1e88-f54f-48e3-8c25-28166caf42ec",
+      "name": "HTTP Request",
+      "credentials": {
+        "airtableApi": {
+          "id": "KugrjSbSBxmz6y2N",
+          "name": "Airtable account"
+        },
+        "httpBearerAuth": {
+          "id": "Ng3PzzR39z1cACue",
+          "name": "Bearer Auth account"
+        },
+        "httpHeaderAuth": {
+          "id": "Y4QbLSgrxpjIUknq",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "records",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        416,
+        -32
+      ],
+      "id": "f9029c27-da8e-441a-8f1f-da251db5613f",
+      "name": "Split Out the data into individual items"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract fields and prepare rows\nlet rows = items.map(item => {\n    const fields = item.json.fields;\n\n    let row = {};\n    for (let key in fields) {\n        // Flatten arrays to comma-separated strings\n        if (Array.isArray(fields[key])) {\n            row[key] = fields[key].join(\", \");\n        } else {\n            row[key] = fields[key];\n        }\n    }\n    return { json: row };\n});\n\n// Sort by ProductID ascending (numeric or string)\nrows.sort((a, b) => {\n    // If ProductID is numeric, convert to number, otherwise string compare\n    let idA = isNaN(Number(a.json.ProductID)) ? a.json.ProductID : Number(a.json.ProductID);\n    let idB = isNaN(Number(b.json.ProductID)) ? b.json.ProductID : Number(b.json.ProductID);\n    return idA > idB ? 1 : idA < idB ? -1 : 0;\n});\n\nreturn rows;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        688,
+        -32
+      ],
+      "id": "9a3834e1-d2ab-4489-b6bb-478b89e5da7f",
+      "name": "extract the product data"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1UPepZzJrWlCX9cRVd42nEC8e-ddBg1Zd4-v2MoTY1EY",
+          "mode": "list",
+          "cachedResultName": "n8n",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UPepZzJrWlCX9cRVd42nEC8e-ddBg1Zd4-v2MoTY1EY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 653128106,
+          "mode": "list",
+          "cachedResultName": "n8n-sheet-products-via-API",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UPepZzJrWlCX9cRVd42nEC8e-ddBg1Zd4-v2MoTY1EY/edit#gid=653128106"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "ProductID"
+          ],
+          "schema": [
+            {
+              "id": "ProductID",
+              "displayName": "ProductID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Description",
+              "displayName": "Description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Category",
+              "displayName": "Category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Price",
+              "displayName": "Price",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Discount %",
+              "displayName": "Discount %",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Rating (Avg)",
+              "displayName": "Rating (Avg)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Stock",
+              "displayName": "Stock",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Tags",
+              "displayName": "Tags",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Brand",
+              "displayName": "Brand",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "SKU",
+              "displayName": "SKU",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Weight (g)",
+              "displayName": "Weight (g)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Width",
+              "displayName": "Width",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Height",
+              "displayName": "Height",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Depth",
+              "displayName": "Depth",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Warranty",
+              "displayName": "Warranty",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Shipping Info",
+              "displayName": "Shipping Info",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Availability",
+              "displayName": "Availability",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Return Policy",
+              "displayName": "Return Policy",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Min Order Qty",
+              "displayName": "Min Order Qty",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Created At",
+              "displayName": "Created At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Updated At",
+              "displayName": "Updated At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Barcode",
+              "displayName": "Barcode",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "QR Code",
+              "displayName": "QR Code",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Thumbnail",
+              "displayName": "Thumbnail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Reviews 2",
+              "displayName": "Reviews 2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "cellFormat": "RAW",
+          "handlingExtraData": "insertInNewColumn"
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        400,
+        -224
+      ],
+      "id": "4b61dd5a-53b8-4dd6-aafb-293a449f0c2c",
+      "name": "Create new product record",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CyDb7sKqUWQwwb9W",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## HTTP GET Method with Authentication\nThis workflow gets product data from API, \nsplits it, extracts the actual data and \ncreates a product record in Airtable, \n",
+        "height": 448,
+        "width": 960
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -112,
+        -288
+      ],
+      "typeVersion": 1,
+      "id": "08a9a0fb-e477-4701-9ebf-9dca4a2ba8e8",
+      "name": "Sticky Note"
+    }
+  ],
+  "pinData": {
+    "HTTP Request": [
+      {
+        "json": {
+          "records": [
+            {
+              "id": "rec0j9KIrGgwZhjC1",
+              "createdTime": "2025-09-21T20:41:21.000Z",
+              "fields": {
+                "ProductID": 21,
+                "Title": "Cucumber",
+                "Description": "Crisp and hydrating cucumbers, ideal for salads, snacks, or as a refreshing side.",
+                "Category": "groceries",
+                "Price": 1.49,
+                "Discount %": 0.0016,
+                "Rating (Avg)": 4.07,
+                "Stock": 84,
+                "Tags": [
+                  "vegetables"
+                ],
+                "SKU": "GRO-BRD-CUC-021",
+                "Weight (g)": 4,
+                "Width": 12.8,
+                "Height": 28.38,
+                "Depth": 21.34,
+                "Warranty": "2 year warranty",
+                "Shipping Info": "Ships in 1-2 business days",
+                "Availability": "In Stock",
+                "Return Policy": "7 days return policy",
+                "Min Order Qty": 2,
+                "Created At": "2025-09-21T20:41:21.000Z",
+                "Updated At": "2025-09-21T20:57:57.000Z",
+                "Barcode": "5300066378225",
+                "QR Code": "https://cdn.dummyjson.com/public/qr-code.png",
+                "Thumbnail": "https://cdn.dummyjson.com/product-images/groceries/cucumber/thumbnail.webp",
+                "Reviews 2": [
+                  "rec1UIsnQexH0Rt51",
+                  "rec8Lito23n2AeUrw",
+                  "recT8fimeyiRM1mh5"
+                ]
+              }
+            },
+            {
+              "id": "rec1Tw0DepnFBQIjp",
+              "createdTime": "2025-09-21T20:41:14.000Z",
+              "fields": {
+                "ProductID": 15,
+                "Title": "Wooden Bathroom Sink With Mirror",
+                "Description": "The Wooden Bathroom Sink with Mirror is a unique and stylish addition to your bathroom, featuring a wooden sink countertop and a matching mirror.",
+                "Category": "furniture",
+                "Price": 799.99,
+                "Discount %": 0.08800000000000001,
+                "Rating (Avg)": 3.59,
+                "Stock": 7,
+                "Tags": [
+                  "furniture",
+                  "bathroom"
+                ],
+                "Brand": "Bath Trends",
+                "SKU": "FUR-BAT-WOO-015",
+                "Weight (g)": 10,
+                "Width": 7.98,
+                "Height": 8.88,
+                "Depth": 28.46,
+                "Warranty": "3 year warranty",
+                "Shipping Info": "Ships in 3-5 business days",
+                "Availability": "Low Stock",
+                "Return Policy": "60 days return policy",
+                "Min Order Qty": 2,
+                "Created At": "2025-09-21T20:41:14.000Z",
+                "Updated At": "2025-09-21T20:57:18.000Z",
+                "Barcode": "1958104402873",
+                "QR Code": "https://cdn.dummyjson.com/public/qr-code.png",
+                "Thumbnail": "https://cdn.dummyjson.com/product-images/furniture/wooden-bathroom-sink-with-mirror/thumbnail.webp",
+                "Reviews 2": [
+                  "recRnqelrPqey1Uk3",
+                  "rec3HjUfy3xbR7Sys",
+                  "recXN33p3wVSbcZQl"
+                ]
+              }
+            },
+            {
+              "id": "rec2BjnODLzNPDfBO",
+              "createdTime": "2025-09-21T20:41:05.000Z",
+              "fields": {
+                "ProductID": 7,
+                "Title": "Chanel Coco Noir Eau De",
+                "Description": "Coco Noir by Chanel is an elegant and mysterious fragrance, featuring notes of grapefruit, rose, and sandalwood. Perfect for evening occasions.",
+                "Category": "fragrances",
+                "Price": 129.99,
+                "Discount %": 0.16510000000000002,
+                "Rating (Avg)": 4.26,
+                "Stock": 58,
+                "Tags": [
+                  "fragrances",
+                  "perfumes"
+                ],
+                "Brand": "Chanel",
+                "SKU": "FRA-CHA-CHA-007",
+                "Weight (g)": 7,
+                "Width": 24.5,
+                "Height": 25.7,
+                "Depth": 25.98,
+                "Warranty": "3 year warranty",
+                "Shipping Info": "Ships overnight",
+                "Availability": "In Stock",
+                "Return Policy": "No return policy",
+                "Min Order Qty": 1,
+                "Created At": "2025-09-21T20:41:05.000Z",
+                "Updated At": "2025-09-21T20:56:24.000Z",
+                "Barcode": "4091737746820",
+                "QR Code": "https://cdn.dummyjson.com/public/qr-code.png",
+                "Thumbnail": "https://cdn.dummyjson.com/product-images/fragrances/chanel-coco-noir-eau-de/thumbnail.webp",
+                "Reviews 2": [
+                  "rectjrRGoXC1ffw2c",
+                  "recptHUcAInBEtp7K",
+                  "recHhGRre5SAbIpoQ"
+                ]
+              }
+            },
+            {
+              "id": "rec41DffCrFeXMK5I",
+              "createdTime": "2025-09-21T20:41:31.000Z",
+              "fields": {
+                "ProductID": 29,
+                "Title": "Juice",
+                "Description": "Refreshing fruit juice, packed with vitamins and great for staying hydrated.",
+                "Category": "groceries",
+                "Price": 3.99,
+                "Discount %": 0.1206,
+                "Rating (Avg)": 3.94,
+                "Stock": 50,
+                "Tags": [
+                  "beverages"
+                ],
+                "SKU": "GRO-BRD-JUI-029",
+                "Weight (g)": 1,
+                "Width": 18.56,
+                "Height": 21.46,
+                "Depth": 28.02,
+                "Warranty": "6 months warranty",
+                "Shipping Info": "Ships in 1 week",
+                "Availability": "In Stock",
+                "Return Policy": "No return policy",
+                "Min Order Qty": 25,
+                "Created At": "2025-09-21T20:41:31.000Z",
+                "Updated At": "2025-09-21T20:59:01.000Z",
+                "Barcode": "6936112580956",
+                "QR Code": "https://cdn.dummyjson.com/public/qr-code.png",
+                "Thumbnail": "https://cdn.dummyjson.com/product-images/groceries/juice/thumbnail.webp",
+                "Reviews 2": [
+                  "recmwtJN7XPefdYTm",
+                  "recLjU737lRJX8fe2",
+                  "recOADhLEi6Oa5pTe"
+                ]
+              }
+            },
+            {
+              "id": "rec6g8SZxcpzLw5RY",
+              "createdTime": "2025-09-21T20:41:29.000Z",
+              "fields": {
+                "ProductID": 27,
+                "Title": "Honey Jar",
+                "Description": "Pure and natural honey in a convenient jar, perfect for sweetening beverages or drizzling over food.",
+                "Category": "groceries",
+                "Price": 6.99,
+                "Discount %": 0.14400000000000002,
+                "Rating (Avg)": 3.97,
+                "Stock": 34,
+                "Tags": [
+                  "condiments"
+                ],
+                "SKU": "GRO-BRD-HON-027",
+                "Weight (g)": 2,
+                "Width": 9.28,
+                "Height": 21.72,
+                "Depth": 17.74,
+                "Warranty": "1 month warranty",
+                "Shipping Info": "Ships in 1-2 business days",
+                "Availability": "In Stock",
+                "Return Policy": "90 days return policy",
+                "Min Order Qty": 47,
+                "Created At": "2025-09-21T20:41:29.000Z",
+                "Updated At": "2025-09-21T20:58:49.000Z",
+                "Barcode": "6354306346329",
+                "QR Code": "https://cdn.dummyjson.com/public/qr-code.png",
+                "Thumbnail": "https://cdn.dummyjson.com/product-images/groceries/honey-jar/thumbnail.webp",
+                "Reviews 2": [
+                  "recXTgXDf92mnAzWP",
+                  "recS4vFGB2623u4Nx",
+                  "recpIMObp8bvmAzqS"
+                ]
+              }
+            },
+            {
+              "id": "recAuItbHOxT0QJpY",
+              "createdTime": "2025-09-21T20:41:24.000Z",
+              "fields": {
+                "ProductID": 22,
+                "Title": "Dog Food",
+                "Description": "Specially formulated dog food designed to provide essential nutrients for your canine companion.",
+                "Category": "groceries",
+                "Price": 10.99,
+                "Discount %": 0.1027,
+                "Rating (Avg)": 4.55,
+                "Stock": 71,
+                "Tags": [
+                  "pet supplies",
+                  "dog food"
+                ],
+                "SKU": "GRO-BRD-FOO-022",
+                "Weight (g)": 10,
+                "Width": 16.93,
+                "Height": 27.15,
+                "Depth": 9.29,
+                "Warranty": "No warranty",
+                "Shipping Info": "Ships in 1-2 business days",
+                "Availability": "In Stock",
+                "Return Policy": "60 days return policy",
+                "Min Order Qty": 43,
+                "Created At": "2025-09-21T20:41:24.000Z",
+                "Updated At": "2025-09-21T20:58:09.000Z",
+                "Barcode": "5906686116469",
+                "QR Code": "https://cdn.dummyjson.com/public/qr-code.png",
+                "Thumbnail": "https://cdn.dummyjson.com/product-images/groceries/dog-food/thumbnail.webp",
+                "Reviews 2": [
+                  "recM8OlwFgvhuZFCD",
+                  "recefp7dlEzFu2792",
+                  "recJTWGEMYyCScajZ"
+                ]
+              }
+            },
+            {
+              "id": "recCi2wtbhcq3WaZE",
+              "createdTime": "2025-09-21T20:41:19.000Z",
+              "fields": {
+                "ProductID": 19,
+                "Title": "Chicken Meat",
+                "Description": "Fresh and tender chicken meat, suitable for various culinary preparations.",
+                "Category": "groceries",
+                "Price": 9.99,
+                "Discount %": 0.13699999999999998,
+                "Rating (Avg)": 3.19,
+                "Stock": 97,
+                "Tags": [
+                  "meat"
+                ],
+                "SKU": "GRO-BRD-CHI-019",
+                "Weight (g)": 1,
+                "Width": 11.03,
+                "Height": 22.11,
+                "Depth": 16.01,
+                "Warranty": "1 year warranty",
+                "Shipping Info": "Ships in 1 month",
+                "Availability": "In Stock",
+                "Return Policy": "7 days return policy",
+                "Min Order Qty": 22,
+                "Created At": "2025-09-21T20:41:19.000Z",
+                "Updated At": "2025-09-21T20:57:40.000Z",
+                "Barcode": "8829514594521",
+                "QR Code": "https://cdn.dummyjson.com/public/qr-code.png",
+                "Thumbnail": "https://cdn.dummyjson.com/product-images/groceries/chicken-meat/thumbnail.webp",
+                "Reviews 2": [
+                  "recQrHgKc7rIGqOn5",
+                  "rec9zhbjiq2Z5yg7l",
+                  "rec8AIh4ccbHs52Af"
+                ]
+              }
+            },
+            {
+              "id": "recDDXYNfpmZ4SUYc",
+              "createdTime": "2025-09-21T20:41:15.000Z",
+              "fields": {
+                "ProductID": 16,
+                "Title": "Apple",
+                "Description": "Fresh and crisp apples, perfect for snacking or incorporating into various recipes.",
+                "Category": "groceries",
+                "Price": 1.99,
+                "Discount %": 0.12619999999999998,
+                "Rating (Avg)": 4.19,
+                "Stock": 8,
+                "Tags": [
+                  "fruits"
+                ],
+                "SKU": "GRO-BRD-APP-016",
+                "Weight (g)": 9,
+                "Width": 13.66,
+                "Height": 11.01,
+                "Depth": 9.73,
+                "Warranty": "3 year warranty",
+                "Shipping Info": "Ships in 2 weeks",
+                "Availability": "In Stock",
+                "Return Policy": "90 days return policy",
+                "Min Order Qty": 7,
+                "Created At": "2025-09-21T20:41:15.000Z",
+                "Updated At": "2025-09-21T20:57:22.000Z",
+                "Barcode": "7962803553314",
+                "QR Code": "https://cdn.dummyjson.com/public/qr-code.png",
+                "Thumbnail": "https://cdn.dummyjson.com/product-images/groceries/apple/thumbnail.webp",
+                "Reviews 2": [
+                  "recDZvY1cuvTa6Fkp",
+                  "recxcxyHhLdvMcMDh",
+                  "recPetQtVYSNrFVWq"
+                ]
+              }
+            },
+            {
+              "id": "recETiPGzhP3O0And",
+              "createdTime": "2025-09-21T20:41:03.000Z",
+              "fields": {
+                "ProductID": 6,
+                "Title": "Calvin Klein CK One",
+                "Description": "CK One by Calvin Klein is a classic unisex fragrance, known for its fresh and clean scent. It's a versatile fragrance suitable for everyday wear.",
+                "Category": "fragrances",
+                "Price": 49.99,
+                "Discount %": 0.0189,
+                "Rating (Avg)": 4.37,
+                "Stock": 29,
+                "Tags": [
+                  "fragrances",
+                  "perfumes"
+                ],
+                "Brand": "Calvin Klein",
+                "SKU": "FRA-CAL-CAL-006",
+                "Weight (g)": 7,
+                "Width": 29.36,
+                "Height": 27.76,
+                "Depth": 20.72,
+                "Warranty": "1 week warranty",
+                "Shipping Info": "Ships overnight",
+                "Availability": "In Stock",
+                "Return Policy": "90 days return policy",
+                "Min Order Qty": 9,
+                "Created At": "2025-09-21T20:41:03.000Z",
+                "Updated At": "2025-09-21T20:56:18.000Z",
+                "Barcode": "2451534060749",
+                "QR Code": "https://cdn.dummyjson.com/public/qr-code.png",
+                "Thumbnail": "https://cdn.dummyjson.com/product-images/fragrances/calvin-klein-ck-one/thumbnail.webp",
+                "Reviews 2": [
+                  "recOyeGa6eeAOlOPH",
+                  "recuJb4kFfjioFdAc",
+                  "recOiSc4tFQHqKXlL"
+                ]
+              }
+            },
+            {
+              "id": "recFGzlEJCFGoOwKJ",
+              "createdTime": "2025-09-21T20:41:12.000Z",
+              "fields": {
+                "ProductID": 13,
+                "Title": "Bedside Table African Cherry",
+                "Description": "The Bedside Table in African Cherry is a stylish and functional addition to your bedroom, providing convenient storage space and a touch of elegance.",
+                "Category": "furniture",
+                "Price": 299.99,
+                "Discount %": 0.1909,
+                "Rating (Avg)": 2.87,
+                "Stock": 64,
+                "Tags": [
+                  "furniture",
+                  "bedside tables"
+                ],
+                "Brand": "Furniture Co.",
+                "SKU": "FUR-FUR-BED-013",
+                "Weight (g)": 2,
+                "Width": 13.47,
+                "Height": 24.99,
+                "Depth": 27.35,
+                "Warranty": "5 year warranty",
+                "Shipping Info": "Ships overnight",
+                "Availability": "In Stock",
+                "Return Policy": "7 days return policy",
+                "Min Order Qty": 3,
+                "Created At": "2025-09-21T20:41:12.000Z",
+                "Updated At": "2025-09-21T20:57:10.000Z",
+                "Barcode": "6441287925979",
+                "QR Code": "https://cdn.dummyjson.com/public/qr-code.png",
+                "Thumbnail": "https://cdn.dummyjson.com/product-images/furniture/bedside-table-african-cherry/thumbnail.webp",
+                "Reviews 2": [
+                  "recDASKpB3lXZZTIo",
+                  "recyNSOjZVSNhuK4o",
+                  "recOGi2JdbylKdDoW"
+                ]
+              }
+            },
+            {
+              "id": "recFJ6PNaBxa0AzL5",
+              "createdTime": "2025-09-21T20:41:06.000Z",
+              "fields": {
+                "ProductID": 8,
+                "Title": "Dior J'adore",
+                "Description": "J'adore by Dior is a luxurious and floral fragrance, known for its blend of ylang-ylang, rose, and jasmine. It embodies femininity and sophistication.",
+                "Category": "fragrances",
+                "Price": 89.99,
+                "Discount %": 0.1472,
+                "Rating (Avg)": 3.8,
+                "Stock": 98,
+                "Tags": [
+                  "fragrances",
+                  "perfumes"
+                ],
+                "Brand": "Dior",
+                "SKU": "FRA-DIO-DIO-008",
+                "Weight (g)": 4,
+                "Width": 27.67,
+                "Height": 28.28,
+                "Depth": 11.83,
+                "Warranty": "1 week warranty",
+                "Shipping Info": "Ships in 2 weeks",
+                "Availability": "In Stock",
+                "Return Policy": "7 days return policy",
+                "Min Order Qty": 10,
+                "Created At": "2025-09-21T20:41:06.000Z",
+                "Updated At": "2025-09-21T20:56:31.000Z",
+                "Barcode": "1445086097250",
+                "QR Code": "https://cdn.dummyjson.com/public/qr-code.png",
+                "Thumbnail": "https://cdn.dummyjson.com/product-images/fragrances/dior-j'adore/thumbnail.webp",
+                "Reviews 2": [
+                  "recMks2DqT2BQI2hE",
+                  "recpx7FOqNeVe5U38",
+                  "recj2J4DTnLucm7l5"
+                ]
+              }
+            },
+            {
+              "id": "recFhdPZ75ICspVDz",
+              "createdTime": "2025-09-21T20:41:13.000Z",
+              "fields": {
+                "ProductID": 14,
+                "Title": "Knoll Saarinen Executive Conference Chair",
+                "Description": "The Knoll Saarinen Executive Conference Chair is a modern and ergonomic chair, perfect for your office or conference room with its timeless design.",
+                "Category": "furniture",
+                "Price": 499.99,
+                "Discount %": 0.020099999999999996,
+                "Rating (Avg)": 4.88,
+                "Stock": 26,
+                "Tags": [
+                  "furniture",
+                  "office chairs"
+                ],
+                "Brand": "Knoll",
+                "SKU": "FUR-KNO-KNO-014",
+                "Weight (g)": 10,
+                "Width": 13.81,
+                "Height": 7.5,
+                "Depth": 5.62,
+                "Warranty": "2 year warranty",
+                "Shipping Info": "Ships overnight",
+                "Availability": "In Stock",
+                "Return Policy": "60 days return policy",
+                "Min Order Qty": 5,
+                "Created At": "2025-09-21T20:41:13.000Z",
+                "Updated At": "2025-09-21T20:57:14.000Z",
+                "Barcode": "8919386859966",
+                "QR Code": "https://cdn.dummyjson.com/public/qr-code.png",
+                "Thumbnail": "https://cdn.dummyjson.com/product-images/furniture/knoll-saarinen-executive-conference-chair/thumbnail.webp",
+                "Reviews 2": [
+                  "rec3R2YkDaYyShuQg",
+                  "recGkApcNMa9mIyLk",
+                  "recyUDzKvl9u4FbfU"
+                ]
+              }
+            },
+            {
+              "id": "recGblsSnrDVYkaVj",
+              "createdTime": "2025-09-21T20:41:18.000Z",
+              "fields": {
+                "ProductID": 18,
+                "Title": "Cat Food",
+                "Description": "Nutritious cat food formulated to meet the dietary needs of your feline friend.",
+                "Category": "groceries",
+                "Price": 8.99,
+                "Discount %": 0.0958,
+                "Rating (Avg)": 3.13,
+                "Stock": 46,
+                "Tags": [
+                  "pet supplies",
+                  "cat food"
+                ],
+                "SKU": "GRO-BRD-FOO-018",
+                "Weight (g)": 10,
+                "Width": 18.08,
+                "Height": 9.26,
+                "Depth": 21.86,
+                "Warranty": "1 year warranty",
+                "Shipping Info": "Ships overnight",
+                "Availability": "In Stock",
+                "Return Policy": "No return policy",
+                "Min Order Qty": 18,
+                "Created At": "2025-09-21T20:41:18.000Z",
+                "Updated At": "2025-09-21T20:57:35.000Z",
+                "Barcode": "1483991328610",
+                "QR Code": "https://cdn.dummyjson.com/public/qr-code.png",
+                "Thumbnail": "https://cdn.dummyjson.com/product-images/groceries/cat-food/thumbnail.webp",
+                "Reviews 2": [
+                  "rec4Q8cD6HkRxbYZc",
+                  "recRdaYKyR2TRgk7z",
+                  "reciiyDjO9SkyL5Lf"
+                ]
+              }
+            },
+            {
+              "id": "recHBXIkjFMD1HPDP",
+              "createdTime": "2025-09-21T20:41:17.000Z",
+              "fields": {
+                "ProductID": 17,
+                "Title": "Beef Steak",
+                "Description": "High-quality beef steak, great for grilling or cooking to your preferred level of doneness.",
+                "Category": "groceries",
+                "Price": 12.99,
+                "Discount %": 0.09609999999999999,
+                "Rating (Avg)": 4.47,
+                "Stock": 86,
+                "Tags": [
+                  "meat"
+                ],
+                "SKU": "GRO-BRD-BEE-017",
+                "Weight (g)": 10,
+                "Width": 18.9,
+                "Height": 5.77,
+                "Depth": 18.57,
+                "Warranty": "3 year warranty",
+                "Shipping Info": "Ships overnight",
+                "Availability": "In Stock",
+                "Return Policy": "60 days return policy",
+                "Min Order Qty": 43,
+                "Created At": "2025-09-21T20:41:17.000Z",
+                "Updated At": "2025-09-21T20:57:26.000Z",
+                "Barcode": "5640063409695",
+                "QR Code": "https://cdn.dummyjson.com/public/qr-code.png",
+                "Thumbnail": "https://cdn.dummyjson.com/product-images/groceries/beef-steak/thumbnail.webp",
+                "Reviews 2": [
+                  "recJbHbRwVZh2jtM7",
+                  "recnmALejrGACQRWD",
+                  "recHS7YQDruI6z2w1"
+                ]
+              }
+            },
+            {
+              "id": "recKS0NsA2a9vQhcx",
+              "createdTime": "2025-09-21T20:41:30.000Z",
+              "fields": {
+                "ProductID": 28,
+                "Title": "Ice Cream",
+                "Description": "Creamy and delicious ice cream, available in various flavors for a delightful treat.",
+                "Category": "groceries",
+                "Price": 5.49,
+                "Discount %": 0.08689999999999999,
+                "Rating (Avg)": 3.39,
+                "Stock": 27,
+                "Tags": [
+                  "desserts"
+                ],
+                "SKU": "GRO-BRD-CRE-028",
+                "Weight (g)": 1,
+                "Width": 14.83,
+                "Height": 15.07,
+                "Depth": 24.2,
+                "Warranty": "1 month warranty",
+                "Shipping Info": "Ships in 2 weeks",
+                "Availability": "In Stock",
+                "Return Policy": "No return policy",
+                "Min Order Qty": 42,
+                "Created At": "2025-09-21T20:41:30.000Z",
+                "Updated At": "2025-09-21T20:58:52.000Z",
+                "Barcode": "0788954559076",
+                "QR Code": "https://cdn.dummyjson.com/public/qr-code.png",
+                "Thumbnail": "https://cdn.dummyjson.com/product-images/groceries/ice-cream/thumbnail.webp",
+                "Reviews 2": [
+                  "recph9PP9yDR2I9eG",
+                  "recRc8lmIOvAt1o5a",
+                  "recTIuWZrSVj5bZ8T"
+                ]
+              }
+            },
+            {
+              "id": "recLr133y6MbIM29q",
+              "createdTime": "2025-09-21T20:41:08.000Z",
+              "fields": {
+                "ProductID": 10,
+                "Title": "Gucci Bloom Eau de",
+                "Description": "Gucci Bloom by Gucci is a floral and captivating fragrance, with notes of tuberose, jasmine, and Rangoon creeper. It's a modern and romantic scent.",
+                "Category": "fragrances",
+                "Price": 79.99,
+                "Discount %": 0.1439,
+                "Rating (Avg)": 2.74,
+                "Stock": 91,
+                "Tags": [
+                  "fragrances",
+                  "perfumes"
+                ],
+                "Brand": "Gucci",
+                "SKU": "FRA-GUC-GUC-010",
+                "Weight (g)": 7,
+                "Width": 20.92,
+                "Height": 21.68,
+                "Depth": 11.2,
+                "Warranty": "6 months warranty",
+                "Shipping Info": "Ships overnight",
+                "Availability": "In Stock",
+                "Return Policy": "No return policy",
+                "Min Order Qty": 2,
+                "Created At": "2025-09-21T20:41:08.000Z",
+                "Updated At": "2025-09-21T20:56:42.000Z",
+                "Barcode": "3170832177880",
+                "QR Code": "https://cdn.dummyjson.com/public/qr-code.png",
+                "Thumbnail": "https://cdn.dummyjson.com/product-images/fragrances/gucci-bloom-eau-de/thumbnail.webp",
+                "Reviews 2": [
+                  "rec1Hf0rA8OJeaLvG",
+                  "recBs9yjvf0d1n6w9",
+                  "rec9u1hYER6euyOME"
+                ]
+              }
+            },
+            {
+              "id": "recOA0ixWOdsZe4Rh",
+              "createdTime": "2025-09-21T20:41:26.000Z",
+              "fields": {
+                "ProductID": 24,
+                "Title": "Fish Steak",
+                "Description": "Quality fish steak, suitable for grilling, baking, or pan-searing.",
+                "Category": "groceries",
+                "Price": 14.99,
+                "Discount %": 0.042300000000000004,
+                "Rating (Avg)": 3.78,
+                "Stock": 74,
+                "Tags": [
+                  "seafood"
+                ],
+                "SKU": "GRO-BRD-FIS-024",
+                "Weight (g)": 6,
+                "Width": 14.95,
+                "Height": 26.31,
+                "Depth": 11.27,
+                "Warranty": "1 month warranty",
+                "Shipping Info": "Ships in 3-5 business days",
+                "Availability": "In Stock",
+                "Return Policy": "60 days return policy",
+                "Min Order Qty": 50,
+                "Created At": "2025-09-21T20:41:26.000Z",
+                "Updated At": "2025-09-21T20:58:27.000Z",
+                "Barcode": "9595036192098",
+                "QR Code": "https://cdn.dummyjson.com/public/qr-code.png",
+                "Thumbnail": "https://cdn.dummyjson.com/product-images/groceries/fish-steak/thumbnail.webp",
+                "Reviews 2": [
+                  "rec8vsXlHSnsBi68A",
+                  "reccoJ8rV2raeGeWD",
+                  "recVJCQPcTywO53fa"
+                ]
+              }
+            },
+            {
+              "id": "recRzXTBvGyyYcUYf",
+              "createdTime": "2025-09-21T20:41:33.000Z",
+              "fields": {
+                "ProductID": 30,
+                "Title": "Kiwi",
+                "Description": "Nutrient-rich kiwi, perfect for snacking or adding a tropical twist to your dishes.",
+                "Category": "groceries",
+                "Price": 2.49,
+                "Discount %": 0.1522,
+                "Rating (Avg)": 4.93,
+                "Stock": 99,
+                "Tags": [
+                  "fruits"
+                ],
+                "SKU": "GRO-BRD-KIW-030",
+                "Weight (g)": 5,
+                "Width": 19.4,
+                "Height": 18.67,
+                "Depth": 17.13,
+                "Warranty": "6 months warranty",
+                "Shipping Info": "Ships overnight",
+                "Availability": "In Stock",
+                "Return Policy": "7 days return policy",
+                "Min Order Qty": 30,
+                "Created At": "2025-09-21T20:41:33.000Z",
+                "Updated At": "2025-09-21T20:59:09.000Z",
+                "Barcode": "2530169917252",
+                "QR Code": "https://cdn.dummyjson.com/public/qr-code.png",
+                "Thumbnail": "https://cdn.dummyjson.com/product-images/groceries/kiwi/thumbnail.webp",
+                "Reviews 2": [
+                  "recIFiKcQttsEzepN",
+                  "recAwd3gFb3l5PkKK",
+                  "rec0yhjDsoupxqnTu"
+                ]
+              }
+            },
+            {
+              "id": "recSWbq4JR1p22Un8",
+              "createdTime": "2025-09-21T20:41:27.000Z",
+              "fields": {
+                "ProductID": 25,
+                "Title": "Green Bell Pepper",
+                "Description": "Fresh and vibrant green bell pepper, perfect for adding color and flavor to your dishes.",
+                "Category": "groceries",
+                "Price": 1.29,
+                "Discount %": 0.0016,
+                "Rating (Avg)": 3.25,
+                "Stock": 33,
+                "Tags": [
+                  "vegetables"
+                ],
+                "SKU": "GRO-BRD-GRE-025",
+                "Weight (g)": 2,
+                "Width": 15.33,
+                "Height": 26.65,
+                "Depth": 14.44,
+                "Warranty": "1 month warranty",
+                "Shipping Info": "Ships in 1 week",
+                "Availability": "In Stock",
+                "Return Policy": "30 days return policy",
+                "Min Order Qty": 12,
+                "Created At": "2025-09-21T20:41:27.000Z",
+                "Updated At": "2025-09-21T20:58:37.000Z",
+                "Barcode": "2365227493323",
+                "QR Code": "https://cdn.dummyjson.com/public/qr-code.png",
+                "Thumbnail": "https://cdn.dummyjson.com/product-images/groceries/green-bell-pepper/thumbnail.webp",
+                "Reviews 2": [
+                  "rec7NO1HCOLrecZkj",
+                  "rec362tMa33ntp0Io",
+                  "recmnlTAUcKAEVDrv"
+                ]
+              }
+            },
+            {
+              "id": "recVzK5JN2PrQpbnO",
+              "createdTime": "2025-09-21T20:41:25.000Z",
+              "fields": {
+                "ProductID": 23,
+                "Title": "Eggs",
+                "Description": "Fresh eggs, a versatile ingredient for baking, cooking, or breakfast.",
+                "Category": "groceries",
+                "Price": 2.99,
+                "Discount %": 0.1105,
+                "Rating (Avg)": 2.53,
+                "Stock": 9,
+                "Tags": [
+                  "dairy"
+                ],
+                "SKU": "GRO-BRD-EGG-023",
+                "Weight (g)": 2,
+                "Width": 11.42,
+                "Height": 7.44,
+                "Depth": 16.95,
+                "Warranty": "1 week warranty",
+                "Shipping Info": "Ships in 1 week",
+                "Availability": "In Stock",
+                "Return Policy": "No return policy",
+                "Min Order Qty": 32,
+                "Created At": "2025-09-21T20:41:25.000Z",
+                "Updated At": "2025-09-21T20:58:18.000Z",
+                "Barcode": "3478638588469",
+                "QR Code": "https://cdn.dummyjson.com/public/qr-code.png",
+                "Thumbnail": "https://cdn.dummyjson.com/product-images/groceries/eggs/thumbnail.webp",
+                "Reviews 2": [
+                  "recq079APNvKBBkX3",
+                  "recYAIuzV9T1prJwJ",
+                  "rec16kqYnnXRkknUf"
+                ]
+              }
+            },
+            {
+              "id": "receI81RVeEEsRjeH",
+              "createdTime": "2025-09-21T20:41:28.000Z",
+              "fields": {
+                "ProductID": 26,
+                "Title": "Green Chili Pepper",
+                "Description": "Spicy green chili pepper, ideal for adding heat to your favorite recipes.",
+                "Category": "groceries",
+                "Price": 0.99,
+                "Discount %": 0.01,
+                "Rating (Avg)": 3.66,
+                "Stock": 3,
+                "Tags": [
+                  "vegetables"
+                ],
+                "SKU": "GRO-BRD-GRE-026",
+                "Weight (g)": 7,
+                "Width": 15.38,
+                "Height": 18.12,
+                "Depth": 19.92,
+                "Warranty": "2 year warranty",
+                "Shipping Info": "Ships in 1 week",
+                "Availability": "Low Stock",
+                "Return Policy": "30 days return policy",
+                "Min Order Qty": 39,
+                "Created At": "2025-09-21T20:41:28.000Z",
+                "Updated At": "2025-09-21T20:58:41.000Z",
+                "Barcode": "9335000538563",
+                "QR Code": "https://cdn.dummyjson.com/public/qr-code.png",
+                "Thumbnail": "https://cdn.dummyjson.com/product-images/groceries/green-chili-pepper/thumbnail.webp",
+                "Reviews 2": [
+                  "recYgNb1wgLD6wqwO",
+                  "recqlJHOFLmG4MTg1",
+                  "recyOhawJnxlCxb9f"
+                ]
+              }
+            },
+            {
+              "id": "rechh2GKqxBkLAcXb",
+              "createdTime": "2025-09-21T20:41:09.000Z",
+              "fields": {
+                "ProductID": 11,
+                "Title": "Annibale Colombo Bed",
+                "Description": "The Annibale Colombo Bed is a luxurious and elegant bed frame, crafted with high-quality materials for a comfortable and stylish bedroom.",
+                "Category": "furniture",
+                "Price": 1899.99,
+                "Discount %": 0.0857,
+                "Rating (Avg)": 4.77,
+                "Stock": 88,
+                "Tags": [
+                  "furniture",
+                  "beds"
+                ],
+                "Brand": "Annibale Colombo",
+                "SKU": "FUR-ANN-ANN-011",
+                "Weight (g)": 10,
+                "Width": 28.16,
+                "Height": 25.36,
+                "Depth": 17.28,
+                "Warranty": "1 year warranty",
+                "Shipping Info": "Ships in 1 month",
+                "Availability": "In Stock",
+                "Return Policy": "No return policy",
+                "Min Order Qty": 1,
+                "Created At": "2025-09-21T20:41:09.000Z",
+                "Updated At": "2025-09-21T20:56:51.000Z",
+                "Barcode": "3610757456581",
+                "QR Code": "https://cdn.dummyjson.com/public/qr-code.png",
+                "Thumbnail": "https://cdn.dummyjson.com/product-images/furniture/annibale-colombo-bed/thumbnail.webp",
+                "Reviews 2": [
+                  "recBkg1tVbyxBxfk1",
+                  "recyAtVmdnt1cFA3B",
+                  "recIUtC1eDyU0fngA"
+                ]
+              }
+            },
+            {
+              "id": "recjGRrBBWMWcpmHv",
+              "createdTime": "2025-09-21T20:40:53.000Z",
+              "fields": {
+                "ProductID": 1,
+                "Title": "Essence Mascara Lash Princess",
+                "Description": "The Essence Mascara Lash Princess is a popular mascara known for its volumizing and lengthening effects. Achieve dramatic lashes with this long-lasting and cruelty-free formula.",
+                "Category": "beauty",
+                "Price": 9.99,
+                "Discount %": 0.1048,
+                "Rating (Avg)": 2.56,
+                "Stock": 99,
+                "Tags": [
+                  "beauty",
+                  "mascara"
+                ],
+                "Brand": "Essence",
+                "SKU": "BEA-ESS-ESS-001",
+                "Weight (g)": 4,
+                "Width": 15.14,
+                "Height": 13.08,
+                "Depth": 22.99,
+                "Warranty": "1 week warranty",
+                "Shipping Info": "Ships in 3-5 business days",
+                "Availability": "In Stock",
+                "Return Policy": "No return policy",
+                "Min Order Qty": 48,
+                "Created At": "2025-09-21T20:40:53.000Z",
+                "Updated At": "2025-09-21T20:55:44.000Z",
+                "Barcode": "5784719087687",
+                "QR Code": "https://cdn.dummyjson.com/public/qr-code.png",
+                "Thumbnail": "https://cdn.dummyjson.com/product-images/beauty/essence-mascara-lash-princess/thumbnail.webp",
+                "Reviews 2": [
+                  "recNGsSBLgUuuUj2C",
+                  "recjICpxcd9eVq78f",
+                  "recoPOROeeV3PUpdM"
+                ]
+              }
+            },
+            {
+              "id": "recjzG9jfVI5BuFWD",
+              "createdTime": "2025-09-21T20:41:07.000Z",
+              "fields": {
+                "ProductID": 9,
+                "Title": "Dolce Shine Eau de",
+                "Description": "Dolce Shine by Dolce & Gabbana is a vibrant and fruity fragrance, featuring notes of mango, jasmine, and blonde woods. It's a joyful and youthful scent.",
+                "Category": "fragrances",
+                "Price": 69.99,
+                "Discount %": 0.0062,
+                "Rating (Avg)": 3.96,
+                "Stock": 4,
+                "Tags": [
+                  "fragrances",
+                  "perfumes"
+                ],
+                "Brand": "Dolce & Gabbana",
+                "SKU": "FRA-DOL-DOL-009",
+                "Weight (g)": 6,
+                "Width": 27.28,
+                "Height": 29.88,
+                "Depth": 18.3,
+                "Warranty": "3 year warranty",
+                "Shipping Info": "Ships in 1 month",
+                "Availability": "Low Stock",
+                "Return Policy": "7 days return policy",
+                "Min Order Qty": 2,
+                "Created At": "2025-09-21T20:41:07.000Z",
+                "Updated At": "2025-09-21T20:56:38.000Z",
+                "Barcode": "3023868210708",
+                "QR Code": "https://cdn.dummyjson.com/public/qr-code.png",
+                "Thumbnail": "https://cdn.dummyjson.com/product-images/fragrances/dolce-shine-eau-de/thumbnail.webp",
+                "Reviews 2": [
+                  "rec2EGJT9nTJGgzpr",
+                  "recjavVL3h6WHucaj",
+                  "recluBhuBMFP0NTDI"
+                ]
+              }
+            },
+            {
+              "id": "reckQ3u8YwM67pC0Q",
+              "createdTime": "2025-09-21T20:40:57.000Z",
+              "fields": {
+                "ProductID": 4,
+                "Title": "Red Lipstick",
+                "Description": "The Red Lipstick is a classic and bold choice for adding a pop of color to your lips. With a creamy and pigmented formula, it provides a vibrant and long-lasting finish.",
+                "Category": "beauty",
+                "Price": 12.99,
+                "Discount %": 0.1216,
+                "Rating (Avg)": 4.36,
+                "Stock": 91,
+                "Tags": [
+                  "beauty",
+                  "lipstick"
+                ],
+                "Brand": "Chic Cosmetics",
+                "SKU": "BEA-CHI-LIP-004",
+                "Weight (g)": 1,
+                "Width": 18.11,
+                "Height": 28.38,
+                "Depth": 22.17,
+                "Warranty": "3 year warranty",
+                "Shipping Info": "Ships in 1 week",
+                "Availability": "In Stock",
+                "Return Policy": "7 days return policy",
+                "Min Order Qty": 40,
+                "Created At": "2025-09-21T20:40:57.000Z",
+                "Updated At": "2025-09-21T20:56:07.000Z",
+                "Barcode": "9467746727219",
+                "QR Code": "https://cdn.dummyjson.com/public/qr-code.png",
+                "Thumbnail": "https://cdn.dummyjson.com/product-images/beauty/red-lipstick/thumbnail.webp",
+                "Reviews 2": [
+                  "recFsE1VnlWVTQaPi",
+                  "recOn06FQqV6leqEi",
+                  "reciyAQ7IPlcpZy5O"
+                ]
+              }
+            },
+            {
+              "id": "recmMc9DcnW7PEGcf",
+              "createdTime": "2025-09-21T20:40:59.000Z",
+              "fields": {
+                "ProductID": 5,
+                "Title": "Red Nail Polish",
+                "Description": "The Red Nail Polish offers a rich and glossy red hue for vibrant and polished nails. With a quick-drying formula, it provides a salon-quality finish at home.",
+                "Category": "beauty",
+                "Price": 8.99,
+                "Discount %": 0.1144,
+                "Rating (Avg)": 4.32,
+                "Stock": 79,
+                "Tags": [
+                  "beauty",
+                  "nail polish"
+                ],
+                "Brand": "Nail Couture",
+                "SKU": "BEA-NAI-NAI-005",
+                "Weight (g)": 8,
+                "Width": 21.63,
+                "Height": 16.48,
+                "Depth": 29.84,
+                "Warranty": "1 month warranty",
+                "Shipping Info": "Ships overnight",
+                "Availability": "In Stock",
+                "Return Policy": "No return policy",
+                "Min Order Qty": 22,
+                "Created At": "2025-09-21T20:40:59.000Z",
+                "Updated At": "2025-09-21T20:56:12.000Z",
+                "Barcode": "4063010628104",
+                "QR Code": "https://cdn.dummyjson.com/public/qr-code.png",
+                "Thumbnail": "https://cdn.dummyjson.com/product-images/beauty/red-nail-polish/thumbnail.webp",
+                "Reviews 2": [
+                  "recsOG1rjS4JdkM15",
+                  "recusGb7bd2nJBraG",
+                  "recUz0mNgQTBSK2Wd"
+                ]
+              }
+            },
+            {
+              "id": "reco7LixlXp5W1o5B",
+              "createdTime": "2025-09-21T20:41:20.000Z",
+              "fields": {
+                "ProductID": 20,
+                "Title": "Cooking Oil",
+                "Description": "Versatile cooking oil suitable for frying, sautéing, and various culinary applications.",
+                "Category": "groceries",
+                "Price": 4.99,
+                "Discount %": 0.0933,
+                "Rating (Avg)": 4.8,
+                "Stock": 10,
+                "Tags": [
+                  "cooking essentials"
+                ],
+                "SKU": "GRO-BRD-COO-020",
+                "Weight (g)": 5,
+                "Width": 19.95,
+                "Height": 27.54,
+                "Depth": 24.86,
+                "Warranty": "Lifetime warranty",
+                "Shipping Info": "Ships in 1-2 business days",
+                "Availability": "In Stock",
+                "Return Policy": "30 days return policy",
+                "Min Order Qty": 46,
+                "Created At": "2025-09-21T20:41:20.000Z",
+                "Updated At": "2025-09-21T20:57:48.000Z",
+                "Barcode": "4874727824518",
+                "QR Code": "https://cdn.dummyjson.com/public/qr-code.png",
+                "Thumbnail": "https://cdn.dummyjson.com/product-images/groceries/cooking-oil/thumbnail.webp",
+                "Reviews 2": [
+                  "rec5ngNgyMWSDWtfz",
+                  "rectlo4RUOnUwreEa",
+                  "recNshZBYXoVj1EYa"
+                ]
+              }
+            },
+            {
+              "id": "recriXkt1UuN4ZC1L",
+              "createdTime": "2025-09-21T20:41:11.000Z",
+              "fields": {
+                "ProductID": 12,
+                "Title": "Annibale Colombo Sofa",
+                "Description": "The Annibale Colombo Sofa is a sophisticated and comfortable seating option, featuring exquisite design and premium upholstery for your living room.",
+                "Category": "furniture",
+                "Price": 2499.99,
+                "Discount %": 0.14400000000000002,
+                "Rating (Avg)": 3.92,
+                "Stock": 60,
+                "Tags": [
+                  "furniture",
+                  "sofas"
+                ],
+                "Brand": "Annibale Colombo",
+                "SKU": "FUR-ANN-ANN-012",
+                "Weight (g)": 6,
+                "Width": 12.75,
+                "Height": 20.55,
+                "Depth": 19.06,
+                "Warranty": "Lifetime warranty",
+                "Shipping Info": "Ships in 1 week",
+                "Availability": "In Stock",
+                "Return Policy": "7 days return policy",
+                "Min Order Qty": 1,
+                "Created At": "2025-09-21T20:41:11.000Z",
+                "Updated At": "2025-09-21T20:57:02.000Z",
+                "Barcode": "1777662847736",
+                "QR Code": "https://cdn.dummyjson.com/public/qr-code.png",
+                "Thumbnail": "https://cdn.dummyjson.com/product-images/furniture/annibale-colombo-sofa/thumbnail.webp",
+                "Reviews 2": [
+                  "recHy4DZXbdpqh3En",
+                  "recLy6WHnBt5xnFmT",
+                  "rec1TV8tuKpOz4c3L"
+                ]
+              }
+            },
+            {
+              "id": "recsgAHAJkUoR2E5A",
+              "createdTime": "2025-09-21T20:40:54.000Z",
+              "fields": {
+                "ProductID": 2,
+                "Title": "Eyeshadow Palette with Mirror",
+                "Description": "The Eyeshadow Palette with Mirror offers a versatile range of eyeshadow shades for creating stunning eye looks. With a built-in mirror, it's convenient for on-the-go makeup application.",
+                "Category": "beauty",
+                "Price": 19.99,
+                "Discount %": 0.1819,
+                "Rating (Avg)": 2.86,
+                "Stock": 34,
+                "Tags": [
+                  "beauty",
+                  "eyeshadow"
+                ],
+                "Brand": "Glamour Beauty",
+                "SKU": "BEA-GLA-EYE-002",
+                "Weight (g)": 9,
+                "Width": 9.26,
+                "Height": 22.47,
+                "Depth": 27.67,
+                "Warranty": "1 year warranty",
+                "Shipping Info": "Ships in 2 weeks",
+                "Availability": "In Stock",
+                "Return Policy": "7 days return policy",
+                "Min Order Qty": 20,
+                "Created At": "2025-09-21T20:40:54.000Z",
+                "Updated At": "2025-09-21T20:55:52.000Z",
+                "Barcode": "9170275171413",
+                "QR Code": "https://cdn.dummyjson.com/public/qr-code.png",
+                "Thumbnail": "https://cdn.dummyjson.com/product-images/beauty/eyeshadow-palette-with-mirror/thumbnail.webp",
+                "Reviews 2": [
+                  "recMoPbGtbiEtYbjJ",
+                  "receypGsgi9jGUQhL",
+                  "recCFCtdwX74Yoh7f"
+                ]
+              }
+            },
+            {
+              "id": "recvTJT1SUENMvoxl",
+              "createdTime": "2025-09-21T20:40:55.000Z",
+              "fields": {
+                "ProductID": 3,
+                "Title": "Powder Canister",
+                "Description": "The Powder Canister is a finely milled setting powder designed to set makeup and control shine. With a lightweight and translucent formula, it provides a smooth and matte finish.",
+                "Category": "beauty",
+                "Price": 14.99,
+                "Discount %": 0.0984,
+                "Rating (Avg)": 4.64,
+                "Stock": 89,
+                "Tags": [
+                  "beauty",
+                  "face powder"
+                ],
+                "Brand": "Velvet Touch",
+                "SKU": "BEA-VEL-POW-003",
+                "Weight (g)": 8,
+                "Width": 29.27,
+                "Height": 27.93,
+                "Depth": 20.59,
+                "Warranty": "3 months warranty",
+                "Shipping Info": "Ships in 1-2 business days",
+                "Availability": "In Stock",
+                "Return Policy": "No return policy",
+                "Min Order Qty": 22,
+                "Created At": "2025-09-21T20:40:55.000Z",
+                "Updated At": "2025-09-21T20:56:01.000Z",
+                "Barcode": "8418883906837",
+                "QR Code": "https://cdn.dummyjson.com/public/qr-code.png",
+                "Thumbnail": "https://cdn.dummyjson.com/product-images/beauty/powder-canister/thumbnail.webp",
+                "Reviews 2": [
+                  "recTnBDhoaf2fvRVQ",
+                  "rec64e2v5MwZEz0GE",
+                  "recIxk8SU9PLzEQjW"
+                ]
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Split Out the data into individual items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out the data into individual items": {
+      "main": [
+        [
+          {
+            "node": "extract the product data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "extract the product data": {
+      "main": [
+        [
+          {
+            "node": "Create new product record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1f5fab56-6cd0-40c2-9d1d-a62ec3d0808c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1e2bb8aa82f0be636e997b5e804bc20eb985dca9a039ca316d301d1dd94ae864"
+  },
+  "id": "4xznPcrWzsd1h1rC",
+  "tags": []
+}
