@@ -1,0 +1,497 @@
+{
+  "name": "AI-Powered_Content_Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1UPepZzJrWlCX9cRVd42nEC8e-ddBg1Zd4-v2MoTY1EY",
+          "mode": "list",
+          "cachedResultName": "n8n",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UPepZzJrWlCX9cRVd42nEC8e-ddBg1Zd4-v2MoTY1EY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1325410090,
+          "mode": "list",
+          "cachedResultName": "BlogPosts",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UPepZzJrWlCX9cRVd42nEC8e-ddBg1Zd4-v2MoTY1EY/edit#gid=1325410090"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -64,
+        16
+      ],
+      "id": "2c66ef26-22b3-485a-84ca-5b5c7340778f",
+      "name": "Google Sheets Trigger",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "eSerUNTzvrM2SKep",
+          "name": "Google Sheets Trigger account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "openai/gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "openai/gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        416,
+        64
+      ],
+      "id": "3298da20-da44-4b3f-b7da-afcf7f905aa0",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "KKIQUuyMr0SpwJAR",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e004b014-c406-45ff-8e07-13ed4ddc4309",
+              "leftValue": "={{ $json.Status }}",
+              "rightValue": "Published",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        144,
+        16
+      ],
+      "id": "63e4bd31-e795-48cd-87d8-ec7983b45e05",
+      "name": "Check IF the blog has been published"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an expert blog writer who creates engaging, SEO-friendly product blog posts. \nAlways write in a friendly, professional tone. \nUse clear headings, short paragraphs, and call-to-actions. \nDo not include any code or markdown, return plain text paragraphs only. \"Do not use any asterisks (*) or other special characters to format the text.\"",
+        "options": {
+          "systemMessage": "=You are a professional blog post writer. Your task is to write a compelling blog post based on the following product details.\n\n### Product Information:Product Name :  {{ $json[\"Product Name\"] }}\nDescription : {{ $json.Description }}\n\n### Instructions:\n- Title: The title should be engaging and professional.\n- Introduction Write a short introduction that introduces the product and its main benefit.\n- Features: Create a bulleted list of the key features and benefits, each with a brief explanation.\n- Quote: Include a short, impactful quote that could be from a positive customer review or a fictional expert.\n- Conclusion: Write a concluding paragraph that summarizes why the product is valuable.\n\nStrict Rule: \"Do not use any asterisks (*) or other special characters to format the text.\""
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        416,
+        -96
+      ],
+      "id": "39f42a41-4dd2-4ace-bcdd-5969bd09f04b",
+      "name": "Writes blog on the product"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1566e5a6-74c2-4baf-84bd-0807da9e17b0",
+              "name": "image",
+              "value": "=\"{{ $('Check IF the blog has been published').item.json['Image URL'].split('/').pop().split('?')[0] }}\"",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        768,
+        16
+      ],
+      "id": "76f0a8c6-8c29-4b89-a410-b8949888e884",
+      "name": "Get image name"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Google Sheets Trigger').item.json[\"Image URL\"] }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -48,
+        272
+      ],
+      "id": "0c506f2a-00eb-47af-801d-955753908439",
+      "name": "Download the image"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://ridtail.s2-tastewp.com/wp-json/wp/v2/media",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Disposition",
+              "value": "=attachment; filename={{ $json.image }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "image/jpeg"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        160,
+        272
+      ],
+      "id": "347ae01a-36f7-4f9b-87da-94b0a2f1af20",
+      "name": "Upload Image to WP",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "McVAmo3UWZYb2ELA",
+          "name": "Unnamed credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// AI output text\nconst text = $('Writes blog on the product').first().json.output || \"\";\n\n// Extract title (after \"Title:\")\nconst titleMatch = text.match(/Title:\\s*(.*)/);\nconst title = titleMatch ? titleMatch[1].trim() : \"Untitled\";\n\n// Remove the \"Title: ...\" line from content\nlet content = text.replace(/Title:.*\\n/, \"\").trim();\n\n// Convert bullet points (- Feature: Description) into <ul><li> with bold feature\ncontent = content.replace(/^- (.*?):\\s*(.*)$/gm, \"<li><strong>$1:</strong> $2</li>\");\n\n// Wrap all <li> in <ul>\ncontent = content.replace(/(<li>.*<\\/li>)/gs, \"<ul>$1</ul>\");\n\n\n// Convert section headings into <h2>\ncontent = content.replace(/^([A-Za-z\\s]+)$/gm, \"<h2>$1</h2>\");\n\n// Replace remaining line breaks with <br/>\ncontent = content.replace(/\\n/g, \"<br/>\");\n\n// Get uploaded image URL + ID (from WP Media upload node)\nconst imageUrl = $input.first().json.source_url || \"\";\nconst imageId = $input.first().json.id || \"\"; // fallback if needed\n\n// Get product link from Google Sheets\nconst productLink = $('Check IF the blog has been published').first().json['Product Link'] || \"#\";\n\n// Hardcoded CTA button with dynamic product link\nconst ctaButton = `\n<p style=\"text-align:center; margin-top:25px;\">\n  <a href=\"${productLink}\" \n     style=\"display:inline-block; background:#2a7ae2; color:#fff; padding:12px 20px; border-radius:6px; text-decoration:none; font-weight:bold;\">\n    Shop Now\n  </a>\n</p>\n`;\n\n// Wrap into styled HTML article\nconst html = `\n<article style=\"font-family: Arial, sans-serif; line-height:1.6; color:#333;\">\n  <h1 style=\"color:#2a7ae2;\">${title}</h1>\n  ${imageUrl ? `<img src=\"${imageUrl}\" alt=\"${title}\" style=\"max-width:100%; margin:20px 0; border-radius:8px;\" />` : \"\"}\n  <div style=\"font-size:16px; margin-top:15px;\">\n    ${content}\n  </div>\n  ${ctaButton}\n</article>\n`;\n\n// Return all fields for WP Post\nreturn [{\n  title,\n  content: html,\n  featured_media: imageId\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        352,
+        272
+      ],
+      "id": "c3ca113f-64f0-489a-a927-a119fcde370b",
+      "name": "Returns Specific WP format"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://ridtail.s2-tastewp.com/wp-json/wp/v2/posts",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "title",
+              "value": "={{ $json.title }}"
+            },
+            {
+              "name": "content",
+              "value": "={{ $json.content }}"
+            },
+            {
+              "name": "featured_media",
+              "value": "={{ $json.featured_media }}"
+            },
+            {
+              "name": "status",
+              "value": "publish"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        560,
+        272
+      ],
+      "id": "f47163ab-3eaa-4655-a943-97bb0d5e82da",
+      "name": "Publish the blog",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "McVAmo3UWZYb2ELA",
+          "name": "Unnamed credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1UPepZzJrWlCX9cRVd42nEC8e-ddBg1Zd4-v2MoTY1EY",
+          "mode": "list",
+          "cachedResultName": "n8n",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UPepZzJrWlCX9cRVd42nEC8e-ddBg1Zd4-v2MoTY1EY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1325410090,
+          "mode": "list",
+          "cachedResultName": "BlogPosts",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UPepZzJrWlCX9cRVd42nEC8e-ddBg1Zd4-v2MoTY1EY/edit#gid=1325410090"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Status": "Published",
+            "Product Name": "={{ $('Check IF the blog has been published').item.json['Product Name'] }}"
+          },
+          "matchingColumns": [
+            "Product Name"
+          ],
+          "schema": [
+            {
+              "id": "Product Name",
+              "displayName": "Product Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Product Link",
+              "displayName": "Product Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Description",
+              "displayName": "Description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Image URL",
+              "displayName": "Image URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        736,
+        272
+      ],
+      "id": "990f871b-8e22-49e9-9460-5dd352a006b8",
+      "name": "Update the status field to \"Published\"",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CyDb7sKqUWQwwb9W",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## AI-Powered Content Automation Workflow\n\nAutomatically turns new Google Sheet product entries\n into styled WordPress blog posts with images, headings,\n bullet points, and a CTA button—fully automated from \ncontent generation to publishing.",
+        "height": 608,
+        "width": 1104
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -176,
+        -160
+      ],
+      "typeVersion": 1,
+      "id": "27125027-c3d1-4ce9-82ea-96deaed8aff3",
+      "name": "Sticky Note"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "Check IF the blog has been published",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Writes blog on the product",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check IF the blog has been published": {
+      "main": [
+        [
+          {
+            "node": "Writes blog on the product",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Writes blog on the product": {
+      "main": [
+        [
+          {
+            "node": "Get image name",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get image name": {
+      "main": [
+        [
+          {
+            "node": "Download the image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download the image": {
+      "main": [
+        [
+          {
+            "node": "Upload Image to WP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Image to WP": {
+      "main": [
+        [
+          {
+            "node": "Returns Specific WP format",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Returns Specific WP format": {
+      "main": [
+        [
+          {
+            "node": "Publish the blog",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Publish the blog": {
+      "main": [
+        [
+          {
+            "node": "Update the status field to \"Published\"",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f516b979-eddf-43f9-8820-39102739e8ba",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1e2bb8aa82f0be636e997b5e804bc20eb985dca9a039ca316d301d1dd94ae864"
+  },
+  "id": "llmUk2B8qU8p4UWB",
+  "tags": []
+}
